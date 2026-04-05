@@ -1,0 +1,41 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1200" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="1" stop-color="#9333EA"/>
+    </linearGradient>
+    <linearGradient id="case" x1="280" y1="210" x2="930" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E2E8F0"/>
+      <stop offset="1" stop-color="#C7D2FE"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg2)"/>
+  <circle cx="170" cy="130" r="140" fill="#A78BFA" fill-opacity="0.22"/>
+  <circle cx="1040" cy="580" r="150" fill="#F9A8D4" fill-opacity="0.2"/>
+
+  <rect x="270" y="220" width="660" height="280" rx="34" fill="url(#case)"/>
+  <rect x="320" y="270" width="560" height="180" rx="20" fill="#334155"/>
+
+  <g fill="#E2E8F0">
+    <rect x="340" y="290" width="58" height="34" rx="6"/>
+    <rect x="410" y="290" width="58" height="34" rx="6"/>
+    <rect x="480" y="290" width="58" height="34" rx="6"/>
+    <rect x="550" y="290" width="58" height="34" rx="6"/>
+    <rect x="620" y="290" width="58" height="34" rx="6"/>
+    <rect x="690" y="290" width="58" height="34" rx="6"/>
+    <rect x="760" y="290" width="100" height="34" rx="6"/>
+
+    <rect x="340" y="335" width="90" height="34" rx="6"/>
+    <rect x="442" y="335" width="58" height="34" rx="6"/>
+    <rect x="512" y="335" width="58" height="34" rx="6"/>
+    <rect x="582" y="335" width="58" height="34" rx="6"/>
+    <rect x="652" y="335" width="58" height="34" rx="6"/>
+    <rect x="722" y="335" width="138" height="34" rx="6"/>
+
+    <rect x="340" y="380" width="520" height="34" rx="6"/>
+  </g>
+
+  <text x="90" y="96" fill="#F5F3FF" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700">Custom Keyboard Case</text>
+  <text x="90" y="142" fill="#DDD6FE" font-family="Arial, Helvetica, sans-serif" font-size="26">Precision enclosure with premium finish</text>
+</svg>
+

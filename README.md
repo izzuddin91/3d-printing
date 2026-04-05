@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IZ 3D Printing Website
 
-## Getting Started
+Marketing and lead-capture website for a 3D printing business, built with Next.js App Router.
 
-First, run the development server:
+## Features
+
+- Conversion-focused homepage with services, process, portfolio preview, and FAQ
+- Dedicated pages for `services`, `pricing`, `portfolio`, `quote`, and `contact`
+- Interactive pricing estimator on the pricing page
+- Quote request form powered by a Server Action (`app/quote/actions.ts`)
+- Local quote persistence to `data/quotes.json` for quick MVP storage
+- SEO basics with `app/sitemap.ts`, `app/robots.ts`, and metadata in `app/layout.tsx`
+
+## Project Structure
+
+- `app/page.tsx`: Homepage
+- `app/quote/page.tsx`: Quote form page
+- `components/*`: Reusable UI sections
+- `lib/site-data.ts`: Business content (services, materials, FAQ, portfolio)
+- `lib/quote-store.ts`: Quote storage adapter
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Validation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
+## Environment
 
-To learn more about Next.js, take a look at the following resources:
+Set your production URL for canonical metadata and sitemap links:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This MVP stores quotes in a local JSON file. For production, replace the storage layer in `lib/quote-store.ts` with a database (for example PostgreSQL, Supabase, or SQLite via Prisma).

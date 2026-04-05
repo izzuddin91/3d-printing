@@ -1,0 +1,26 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1200" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1120"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+    <linearGradient id="jig" x1="230" y1="220" x2="950" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5EEAD4"/>
+      <stop offset="1" stop-color="#A7F3D0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg3)"/>
+  <rect x="180" y="160" width="840" height="390" rx="38" fill="#0F172A" fill-opacity="0.3"/>
+  <rect x="220" y="200" width="760" height="310" rx="30" fill="url(#jig)"/>
+
+  <rect x="280" y="260" width="640" height="70" rx="18" fill="#115E59"/>
+  <rect x="280" y="355" width="640" height="70" rx="18" fill="#115E59"/>
+  <circle cx="340" cy="295" r="22" fill="#99F6E4"/>
+  <circle cx="860" cy="295" r="22" fill="#99F6E4"/>
+  <circle cx="340" cy="390" r="22" fill="#99F6E4"/>
+  <circle cx="860" cy="390" r="22" fill="#99F6E4"/>
+
+  <text x="90" y="96" fill="#CCFBF1" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700">Packaging Line Jig</text>
+  <text x="90" y="142" fill="#99F6E4" font-family="Arial, Helvetica, sans-serif" font-size="26">Factory-ready tool to speed up setup</text>
+</svg>
+

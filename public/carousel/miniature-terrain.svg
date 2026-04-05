@@ -1,0 +1,27 @@
+<svg width="1200" height="700" viewBox="0 0 1200 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="1200" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#172554"/>
+      <stop offset="1" stop-color="#7E22CE"/>
+    </linearGradient>
+    <linearGradient id="terrain" x1="250" y1="230" x2="930" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E9D5FF"/>
+      <stop offset="1" stop-color="#C4B5FD"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg4)"/>
+  <circle cx="980" cy="110" r="130" fill="#DDD6FE" fill-opacity="0.2"/>
+  <circle cx="170" cy="600" r="180" fill="#F5D0FE" fill-opacity="0.16"/>
+
+  <path d="M240 490H960L860 280L730 360L610 250L470 340L360 260L240 490Z" fill="url(#terrain)"/>
+  <rect x="220" y="490" width="780" height="70" rx="20" fill="#312E81"/>
+
+  <circle cx="410" cy="420" r="16" fill="#4C1D95"/>
+  <circle cx="520" cy="385" r="12" fill="#4C1D95"/>
+  <circle cx="670" cy="410" r="18" fill="#4C1D95"/>
+  <circle cx="790" cy="370" r="14" fill="#4C1D95"/>
+
+  <text x="90" y="96" fill="#F3E8FF" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700">Miniature Terrain Set</text>
+  <text x="90" y="142" fill="#DDD6FE" font-family="Arial, Helvetica, sans-serif" font-size="26">High-detail resin scenery for collectors</text>
+</svg>
+
