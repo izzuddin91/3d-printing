@@ -3,7 +3,7 @@ import { portfolioItems } from "@/lib/site-data";
 export function PortfolioGrid() {
   return (
     <div className="grid gap-6 sm:grid-cols-2">
-      {portfolioItems.map((item, index) => (
+      {portfolioItems.map((item) => (
         <article
           key={item.name}
           className="group card-glow relative overflow-hidden bg-gradient-to-br from-white to-blue-50 p-6"
@@ -26,5 +26,3 @@ export function PortfolioGrid() {
     </div>
   );
 }
-
-

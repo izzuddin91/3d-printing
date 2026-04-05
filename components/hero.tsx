@@ -1,12 +1,24 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 p-10 text-white md:p-16">
+    <section className="relative overflow-hidden rounded-3xl p-10 text-white md:p-16">
+      <Image
+        src="/3d-printer.png"
+        alt="3D printer producing a custom object"
+        fill
+        priority
+        sizes="(max-width: 768px) 100vw, 1200px"
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-slate-950/45" />
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-950/65 via-blue-900/55 to-purple-900/55" />
+
       {/* Decorative background elements */}
       <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl" />
       <div className="absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-pink-400/10 blur-3xl" />
-      
+
       <div className="relative z-10">
         <p className="mb-3 inline-block rounded-full bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.2em] text-blue-100 backdrop-blur-sm">
           ✨ Reliable 3D printing partner
@@ -15,8 +27,9 @@ export function Hero() {
           Prototype, iterate, and manufacture custom parts faster.
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-blue-100">
-          We help product teams, makers, and small businesses ship better hardware with fast turnaround and
-          consistent quality. From concept to delivery in days, not weeks.
+          We help product teams, makers, and small businesses ship better
+          hardware with fast turnaround and consistent quality. From concept to
+          delivery in days, not weeks.
         </p>
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <Link
@@ -38,5 +51,3 @@ export function Hero() {
     </section>
   );
 }
-
-
