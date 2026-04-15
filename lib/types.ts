@@ -30,6 +30,7 @@ export type QuoteRequest = {
   name: string;
   email: string;
   phone: string;
+  fileUrl: string;
   projectType: string;
   quantity: number;
   material: string;
@@ -42,4 +43,17 @@ export type CarouselSlide = {
   alt: string;
   title: string;
   caption: string;
+};
+
+export type FilamentPrice = {
+  id: string;
+  name: string;
+  pricePerGram: number;
+  pricePerMeter?: number;
+  color: string;
+  material: string;
+  description?: string;
+  inStock: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

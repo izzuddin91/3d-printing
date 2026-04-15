@@ -1,22 +1,18 @@
-import { faqs } from "@/lib/site-data";
+import { faqItems } from "@/lib/site-data";
 
 export function FaqList() {
   return (
-    <div className="space-y-4">
-      {faqs.map((item) => (
-        <details
-          key={item.question}
-          className="group card-glow cursor-pointer bg-gradient-to-br from-white to-blue-50 p-5"
-        >
-          <summary className="flex items-center justify-between font-semibold text-blue-950">
-            <span>{item.question}</span>
-            <span className="inline-block h-2 w-2 rounded-full bg-gradient-to-r from-blue-500 to-pink-500 group-open:scale-0 transition-transform" />
-          </summary>
-          <p className="mt-3 text-sm leading-relaxed text-neutral-700">{item.answer}</p>
-        </details>
-      ))}
-    </div>
+	<div className="grid gap-4 md:grid-cols-2">
+	  {faqItems.map((item) => (
+		<article
+		  key={item.question}
+		  className="rounded-2xl border border-blue-100 bg-white p-6"
+		>
+		  <h3 className="text-base font-semibold text-blue-950">{item.question}</h3>
+		  <p className="mt-2 text-sm text-neutral-600">{item.answer}</p>
+		</article>
+	  ))}
+	</div>
   );
 }
-
 

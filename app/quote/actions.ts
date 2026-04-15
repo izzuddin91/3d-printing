@@ -1,56 +1,59 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
-import { saveQuote } from "@/lib/quote-store";
-import { projectTypes } from "@/lib/site-data";
-import type { QuoteRequest } from "@/lib/types";
+import { addQuoteRequest } from "@/lib/quote-store";
+import type { QuoteFormState } from "@/lib/quote-form";
 
-function getText(formData: FormData, key: string): string {
-  const value = formData.get(key);
-  return typeof value === "string" ? value.trim() : "";
-}
+export async function submitQuoteRequest(
+  _prevState: QuoteFormState,
+  formData: FormData,
+): Promise<QuoteFormState> {
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const fileUrl = String(formData.get("fileUrl") ?? "").trim();
+  const projectType = String(formData.get("projectType") ?? "").trim();
+  const material = String(formData.get("material") ?? "").trim();
+  const targetDate = String(formData.get("targetDate") ?? "").trim();
+  const notes = String(formData.get("notes") ?? "").trim();
+  const quantity = Math.max(1, Number(formData.get("quantity") ?? 1));
 
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-export async function submitQuote(formData: FormData): Promise<void> {
-  const name = getText(formData, "name");
-  const email = getText(formData, "email");
-  const phone = getText(formData, "phone");
-  const projectType = getText(formData, "projectType");
-  const quantity = Number(getText(formData, "quantity"));
-  const material = getText(formData, "material");
-  const targetDate = getText(formData, "targetDate");
-  const notes = getText(formData, "notes");
-
-  if (!name || !email || !phone || !projectType || !material || !Number.isFinite(quantity) || quantity < 1) {
-    redirect("/quote?error=invalid-input");
+  if (!name || !phone || !fileUrl) {
+    return {
+      success: false,
+      message: "Please fill in name, phone number, and file link.",
+    };
   }
 
-  if (!isValidEmail(email)) {
-    redirect("/quote?error=invalid-email");
-  }
-
-  if (!projectTypes.includes(projectType as (typeof projectTypes)[number])) {
-    redirect("/quote?error=invalid-project-type");
-  }
-
-  const quote: QuoteRequest = {
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
+  await addQuoteRequest({
     name,
     email,
     phone,
+    fileUrl,
     projectType,
     quantity,
     material,
     targetDate,
     notes,
-  };
+  });
 
-  await saveQuote(quote);
-  redirect("/quote?submitted=1");
+  revalidatePath("/admin/requests");
+
+  return {
+    success: true,
+    message: "Quote request submitted. We will contact you shortly.",
+    data: {
+      name,
+      email,
+      phone,
+      fileUrl,
+      projectType,
+      quantity,
+      material,
+      targetDate,
+      notes,
+    },
+  };
 }
 

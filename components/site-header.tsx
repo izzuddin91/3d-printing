@@ -6,6 +6,7 @@ const links = [
   { href: "/portfolio", label: "Portfolio" },
   { href: "/quote", label: "Get Quote" },
   { href: "/contact", label: "Contact" },
+  { href: "/admin/login", label: "Admin" },
 ];
 
 export function SiteHeader() {

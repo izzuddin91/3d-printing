@@ -1,108 +1,202 @@
-import { materials, projectTypes } from "@/lib/site-data";
+"use client";
 
-import { submitQuote } from "./actions";
+import { useActionState, useState, useEffect } from "react";
 
-type QuotePageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
+import { submitQuoteRequest } from "@/app/quote/actions";
+import { initialQuoteFormState, type QuoteFormState } from "@/lib/quote-form";
+import { SubmissionSummaryModal } from "@/components/submission-summary-modal";
+import { getFilamentPrices } from "@/lib/filament-store";
 
-function toSingleValue(value: string | string[] | undefined): string {
-  return Array.isArray(value) ? value[0] ?? "" : value ?? "";
-}
+const projectTypes = [
+  "Prototype",
+  "Replacement part",
+  "Small-batch product",
+  "Art/collectible",
+] as const;
 
-export default async function QuotePage({ searchParams }: QuotePageProps) {
-  const query = await searchParams;
-  const submitted = toSingleValue(query.submitted) === "1";
-  const error = toSingleValue(query.error);
+export default function QuotePage() {
+  const [state, action, isPending] = useActionState(
+    submitQuoteRequest,
+    initialQuoteFormState,
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [materials, setMaterials] = useState<string[]>([]);
+  const [loadingMaterials, setLoadingMaterials] = useState(true);
+
+  // Fetch materials from Firebase
+  useEffect(() => {
+    const loadMaterials = async () => {
+      try {
+        const filamentPrices = await getFilamentPrices();
+        // Extract unique materials from filament prices
+        const uniqueMaterials = [
+          ...new Set(filamentPrices.map((fp) => fp.material)),
+        ].sort();
+        setMaterials(uniqueMaterials);
+      } catch (error) {
+        console.error("Failed to load materials:", error);
+        // Fallback to hardcoded materials if Firebase fails
+        setMaterials(["PLA", "PETG", "ABS", "TPU", "Resin"]);
+      } finally {
+        setLoadingMaterials(false);
+      }
+    };
+
+    loadMaterials();
+  }, []);
+
+  // Show modal when submission is successful
+  useEffect(() => {
+    if (state.success && state.data) {
+      setShowModal(true);
+    }
+  }, [state.success, state.data]);
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-14">
-      <div className="mb-8 space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Quote Request</p>
-        <h1 className="text-4xl font-bold tracking-tight text-blue-950">Get your project quoted</h1>
-        <p className="max-w-2xl text-neutral-600">Tell us about your project and we will reply with pricing and timeline within one business day.</p>
-      </div>
+    <>
+      <main className="mx-auto w-full max-w-4xl flex-1 px-6 py-12">
+        <div className="rounded-3xl border border-blue-100 bg-white p-8 shadow-sm md:p-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">
+            Quote Request
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-blue-950">
+            Upload your project details
+          </h1>
+          <p className="mt-2 text-sm text-neutral-600">
+            Share your requirements and a downloadable STL or 3D file link.
+          </p>
 
-      {submitted ? (
-        <div className="mt-6 rounded-xl border border-emerald-300 bg-gradient-to-br from-emerald-50 to-green-50 p-5 text-emerald-900 shadow-sm">
-          <p className="font-semibold">✅ Quote request submitted!</p>
-          <p className="mt-2 text-sm">We usually respond within one business day. Check your email for our response.</p>
+          <form action={action} className="mt-8 grid gap-5">
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="text-sm font-medium text-neutral-700">
+                Name *
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="name"
+                  required
+                />
+              </label>
+              <label className="text-sm font-medium text-neutral-700">
+                Email
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="email"
+                  type="email"
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="text-sm font-medium text-neutral-700">
+                Phone number *
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="phone"
+                  required
+                />
+              </label>
+              <label className="text-sm font-medium text-neutral-700">
+                STL / 3D File URL *
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="fileUrl"
+                  placeholder="https://drive.google.com/..."
+                  type="url"
+                  required
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-3">
+              <label className="text-sm font-medium text-neutral-700">
+                Project type
+                <select
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="projectType"
+                  defaultValue={projectTypes[0]}
+                >
+                  {projectTypes.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="text-sm font-medium text-neutral-700">
+                Material
+                <select
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900 disabled:opacity-60"
+                  name="material"
+                  defaultValue={materials[0] || ""}
+                  disabled={loadingMaterials}
+                >
+                  {loadingMaterials ? (
+                    <option>Loading materials...</option>
+                  ) : (
+                    materials.map((item) => (
+                      <option key={item} value={item}>
+                        {item}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </label>
+
+              <label className="text-sm font-medium text-neutral-700">
+                Quantity
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  defaultValue={1}
+                  min={1}
+                  name="quantity"
+                  type="number"
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="text-sm font-medium text-neutral-700">
+                Target date
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="targetDate"
+                  type="date"
+                />
+              </label>
+              <label className="text-sm font-medium text-neutral-700">
+                Notes
+                <textarea
+                  className="mt-2 h-24 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="notes"
+                />
+              </label>
+            </div>
+
+            <button
+              className="mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60"
+              disabled={isPending}
+              type="submit"
+            >
+              {isPending ? "Submitting..." : "Submit quote request"}
+            </button>
+
+            {state.message ? (
+              <p
+                className={`text-sm ${state.success ? "text-emerald-600" : "text-red-600"}`}
+              >
+                {state.message}
+              </p>
+            ) : null}
+          </form>
         </div>
-      ) : null}
+      </main>
 
-      {error ? (
-        <div className="mt-6 rounded-xl border border-red-300 bg-gradient-to-br from-red-50 to-orange-50 p-5 text-red-800 shadow-sm">
-          <p className="font-semibold">⚠️ Error submitting form</p>
-          <p className="mt-2 text-sm">Please check your input and try again.</p>
-        </div>
-      ) : null}
-
-      <form action={submitQuote} className="card-glow mt-8 overflow-hidden bg-gradient-to-br from-white to-blue-50 p-8">
-        <div className="grid gap-5 md:grid-cols-2">
-          <label className="text-sm">
-            <span className="mb-2 block font-semibold text-blue-950">Full name</span>
-            <input className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" name="name" required />
-          </label>
-
-          <label className="text-sm">
-            <span className="mb-2 block font-semibold text-blue-950">Email</span>
-            <input className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" name="email" type="email" required />
-          </label>
-
-          <label className="text-sm">
-            <span className="mb-2 block font-semibold text-blue-950">Phone</span>
-            <input className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" name="phone" required />
-          </label>
-
-          <label className="text-sm">
-            <span className="mb-2 block font-semibold text-blue-950">Project type</span>
-            <select className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" name="projectType" required>
-              {projectTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="text-sm">
-            <span className="mb-2 block font-semibold text-blue-950">Material</span>
-            <select className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" name="material" required>
-              {materials.map((item) => (
-                <option key={item.name} value={item.name}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="text-sm">
-            <span className="mb-2 block font-semibold text-blue-950">Quantity</span>
-            <input className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" name="quantity" type="number" min={1} defaultValue={1} required />
-          </label>
-
-          <label className="text-sm md:col-span-2">
-            <span className="mb-2 block font-semibold text-blue-950">Target delivery date</span>
-            <input className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all" name="targetDate" type="date" />
-          </label>
-        </div>
-
-        <label className="block text-sm mt-5">
-          <span className="mb-2 block font-semibold text-blue-950">Project notes</span>
-          <textarea
-            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-            name="notes"
-            rows={5}
-            placeholder="Model dimensions, tolerances, use-case, and any special requirements"
-          />
-        </label>
-
-        <button className="btn-primary mt-6 w-full" type="submit">
-          Submit quote request
-        </button>
-      </form>
-    </main>
+      <SubmissionSummaryModal
+        isOpen={showModal}
+        data={state.data || null}
+        onDismiss={() => setShowModal(false)}
+      />
+    </>
   );
 }
-
-
