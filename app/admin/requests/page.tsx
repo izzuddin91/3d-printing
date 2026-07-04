@@ -78,18 +78,31 @@ function RequestTable({
                     {request.quantity ?? 0}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    {request.fileUrl ? (
-                      <a
-                        href={request.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-medium text-blue-700 underline-offset-2 hover:underline"
-                      >
-                        Download file
-                      </a>
-                    ) : (
-                      <span className="text-neutral-500">-</span>
-                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {request.fileUrl ? (
+                        <a
+                          href={request.fileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-blue-700 underline-offset-2 hover:underline"
+                        >
+                          Download file
+                        </a>
+                      ) : (
+                        <span className="text-neutral-500">-</span>
+                      )}
+
+                      {request.id ? (
+                        <a
+                          href={`/admin/requests/${request.id}/pdf`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-emerald-700 underline-offset-2 hover:underline"
+                        >
+                          View PDF
+                        </a>
+                      ) : null}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-neutral-600">
                     {new Date(request.createdAt).toLocaleString()}
