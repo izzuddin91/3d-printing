@@ -18,6 +18,13 @@ export async function submitQuoteRequest(
   const targetDate = String(formData.get("targetDate") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
   const quantity = Math.max(1, Number(formData.get("quantity") ?? 1));
+  const transactionPeriod = String(formData.get("transactionPeriod") ?? "").trim();
+  const serviceDescription = String(
+    formData.get("serviceDescription") ?? "Printing Service",
+  ).trim();
+  const weight = Number(formData.get("weight") ?? 0);
+  const pricePerGram = Number(formData.get("pricePerGram") ?? 0);
+  const totalPayment = Number(formData.get("totalPayment") ?? 0);
 
   if (!name || !phone || !fileUrl) {
     return {
@@ -36,6 +43,11 @@ export async function submitQuoteRequest(
     material,
     targetDate,
     notes,
+    transactionPeriod,
+    serviceDescription,
+    weight,
+    pricePerGram,
+    totalPayment,
   });
 
   revalidatePath("/admin/requests");
@@ -53,6 +65,11 @@ export async function submitQuoteRequest(
       material,
       targetDate,
       notes,
+      transactionPeriod,
+      serviceDescription,
+      weight,
+      pricePerGram,
+      totalPayment,
     },
   };
 }

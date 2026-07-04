@@ -1,17 +1,21 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import type { ComponentProps } from "react";
 import { useRouter } from "next/navigation";
 
 import { authenticateAdmin } from "@/lib/firebase-auth";
-import { adminBypassEnabled } from "@/lib/firebase-credentials";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  type FormSubmitEvent = Parameters<
+    NonNullable<ComponentProps<"form">["onSubmit"]>
+  >[0];
+
+  async function handleSubmit(event: FormSubmitEvent) {
     event.preventDefault();
     setErrorMessage("");
     setIsPending(true);
@@ -20,35 +24,31 @@ export default function AdminLoginPage() {
     const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "").trim();
 
-    let isAuthenticated = false;
-
-    if (email && password) {
-      try {
-        await authenticateAdmin(email, password);
-        isAuthenticated = true;
-      } catch (error) {
-        if (!adminBypassEnabled) {
-          const errorMessage =
-            error instanceof Error ? error.message : "Firebase login failed";
-          setErrorMessage(
-            errorMessage === "Access denied: User is not an admin"
-              ? "Access denied: Admin privileges required"
-              : "Firebase login failed. Check credentials and try again.",
-          );
-          setIsPending(false);
-          return;
-        }
-      }
+    if (!email || !password) {
+      setErrorMessage("Email and password are required.");
+      setIsPending(false);
+      return;
     }
 
-    if (!isAuthenticated && !adminBypassEnabled) {
-      setErrorMessage("Email and password are required.");
+    let idToken = "";
+
+    try {
+      const result = await authenticateAdmin(email, password);
+      idToken = result.idToken;
+    } catch {
+      setErrorMessage(
+        "Firebase login failed. Check credentials and try again.",
+      );
       setIsPending(false);
       return;
     }
 
     const response = await fetch("/api/admin/session", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ idToken }),
     });
 
     if (!response.ok) {
@@ -71,8 +71,7 @@ export default function AdminLoginPage() {
           Login
         </h1>
         <p className="mt-2 text-sm text-neutral-600">
-          Firebase auth is wired. Bypass is currently{" "}
-          {adminBypassEnabled ? "enabled" : "disabled"}.
+          Sign in with your Firebase email and password credentials.
         </p>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>

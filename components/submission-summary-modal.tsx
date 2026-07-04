@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { QuoteRequest } from "@/lib/types";
 
@@ -117,6 +116,61 @@ export function SubmissionSummaryModal({
                 </p>
                 <p className="mt-1 text-sm text-neutral-900">
                   {data.targetDate}
+                </p>
+              </div>
+            )}
+
+            {data.transactionPeriod && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.1em] text-neutral-600">
+                  Transaction Date
+                </p>
+                <p className="mt-1 text-sm text-neutral-900">
+                  {data.transactionPeriod}
+                </p>
+              </div>
+            )}
+
+            {data.serviceDescription && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.1em] text-neutral-600">
+                  Service Description
+                </p>
+                <p className="mt-1 text-sm text-neutral-900">
+                  {data.serviceDescription}
+                </p>
+              </div>
+            )}
+
+            {data.weight !== undefined && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.1em] text-neutral-600">
+                  Weight (g)
+                </p>
+                <p className="mt-1 text-sm text-neutral-900">
+                  {Number(data.weight).toFixed(2)}
+                </p>
+              </div>
+            )}
+
+            {data.pricePerGram !== undefined && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.1em] text-neutral-600">
+                  Price Per Gram
+                </p>
+                <p className="mt-1 text-sm text-neutral-900">
+                  RM {Number(data.pricePerGram).toFixed(2)}
+                </p>
+              </div>
+            )}
+
+            {data.totalPayment !== undefined && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.1em] text-neutral-600">
+                  Total Payment
+                </p>
+                <p className="mt-1 text-sm font-semibold text-blue-900">
+                  RM {Number(data.totalPayment).toFixed(2)}
                 </p>
               </div>
             )}

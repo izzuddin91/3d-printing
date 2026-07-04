@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { ComponentProps } from "react";
 
-import { submitQuoteRequest } from "@/app/quote/actions";
-import { initialQuoteFormState, type QuoteFormState } from "@/lib/quote-form";
+import { addQuoteRequest } from "@/lib/quote-store";
 import { SubmissionSummaryModal } from "@/components/submission-summary-modal";
 import { getFilamentPrices } from "@/lib/filament-store";
+import type { QuoteRequest } from "@/lib/types";
 
 const projectTypes = [
   "Prototype",
@@ -14,11 +15,18 @@ const projectTypes = [
   "Art/collectible",
 ] as const;
 
+const serviceDescriptions = ["Printing Service"] as const;
+
+type FormSubmitEvent = Parameters<
+  NonNullable<ComponentProps<"form">["onSubmit"]>
+>[0];
+
 export default function QuotePage() {
-  const [state, action, isPending] = useActionState(
-    submitQuoteRequest,
-    initialQuoteFormState,
-  );
+  const [isPending, setIsPending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [submittedData, setSubmittedData] =
+    useState<Partial<QuoteRequest> | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [materials, setMaterials] = useState<string[]>([]);
   const [loadingMaterials, setLoadingMaterials] = useState(true);
@@ -45,12 +53,88 @@ export default function QuotePage() {
     loadMaterials();
   }, []);
 
-  // Show modal when submission is successful
-  useEffect(() => {
-    if (state.success && state.data) {
-      setShowModal(true);
+  async function handleSubmit(event: FormSubmitEvent) {
+    event.preventDefault();
+    setIsPending(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
+    const fileUrl = String(formData.get("fileUrl") ?? "").trim();
+    const projectType = String(formData.get("projectType") ?? "").trim();
+    const material = String(formData.get("material") ?? "").trim();
+    const targetDate = String(formData.get("targetDate") ?? "").trim();
+    const notes = String(formData.get("notes") ?? "").trim();
+    const quantity = Math.max(1, Number(formData.get("quantity") ?? 1));
+    const transactionPeriod = String(
+      formData.get("transactionPeriod") ?? "",
+    ).trim();
+    const serviceDescription = String(
+      formData.get("serviceDescription") ?? "Printing Service",
+    ).trim();
+    const weight = Number(formData.get("weight") ?? 0);
+    const pricePerGram = Number(formData.get("pricePerGram") ?? 0);
+    const totalPayment = Number(formData.get("totalPayment") ?? 0);
+
+    if (!name || !phone) {
+      setErrorMessage("Please fill in name and phone number.");
+      setIsPending(false);
+      return;
     }
-  }, [state.success, state.data]);
+
+    try {
+      await addQuoteRequest({
+        name,
+        email,
+        phone,
+        fileUrl,
+        projectType,
+        quantity,
+        material,
+        targetDate,
+        notes,
+        transactionPeriod,
+        serviceDescription,
+        weight,
+        pricePerGram,
+        totalPayment,
+      });
+
+      const payload: Partial<QuoteRequest> = {
+        name,
+        email,
+        phone,
+        fileUrl,
+        projectType,
+        quantity,
+        material,
+        targetDate,
+        notes,
+        transactionPeriod,
+        serviceDescription,
+        weight,
+        pricePerGram,
+        totalPayment,
+      };
+
+      setSubmittedData(payload);
+      setSuccessMessage(
+        "Quote request submitted. We will contact you shortly.",
+      );
+      setShowModal(true);
+      form.reset();
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to save quote request";
+      setErrorMessage(message);
+    } finally {
+      setIsPending(false);
+    }
+  }
 
   return (
     <>
@@ -66,7 +150,7 @@ export default function QuotePage() {
             Share your requirements and a downloadable STL or 3D file link.
           </p>
 
-          <form action={action} className="mt-8 grid gap-5">
+          <form className="mt-8 grid gap-5" onSubmit={handleSubmit}>
             <div className="grid gap-5 md:grid-cols-2">
               <label className="text-sm font-medium text-neutral-700">
                 Name *
@@ -96,13 +180,12 @@ export default function QuotePage() {
                 />
               </label>
               <label className="text-sm font-medium text-neutral-700">
-                STL / 3D File URL *
+                STL / 3D File URL
                 <input
                   className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
                   name="fileUrl"
                   placeholder="https://drive.google.com/..."
                   type="url"
-                  required
                 />
               </label>
             </div>
@@ -157,6 +240,70 @@ export default function QuotePage() {
 
             <div className="grid gap-5 md:grid-cols-2">
               <label className="text-sm font-medium text-neutral-700">
+                Transaction date
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="transactionPeriod"
+                  type="date"
+                />
+              </label>
+
+              <label className="text-sm font-medium text-neutral-700">
+                Service description
+                <select
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  name="serviceDescription"
+                  defaultValue={serviceDescriptions[0]}
+                >
+                  {serviceDescriptions.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-3">
+              <label className="text-sm font-medium text-neutral-700">
+                Weight (g)
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  defaultValue={0}
+                  min={0}
+                  name="weight"
+                  step="0.01"
+                  type="number"
+                />
+              </label>
+
+              <label className="text-sm font-medium text-neutral-700">
+                Price per gram
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  defaultValue={0}
+                  min={0}
+                  name="pricePerGram"
+                  step="0.01"
+                  type="number"
+                />
+              </label>
+
+              <label className="text-sm font-medium text-neutral-700">
+                Total payment
+                <input
+                  className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
+                  defaultValue={0}
+                  min={0}
+                  name="totalPayment"
+                  step="0.01"
+                  type="number"
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              <label className="text-sm font-medium text-neutral-700">
                 Target date
                 <input
                   className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-neutral-900"
@@ -181,12 +328,11 @@ export default function QuotePage() {
               {isPending ? "Submitting..." : "Submit quote request"}
             </button>
 
-            {state.message ? (
-              <p
-                className={`text-sm ${state.success ? "text-emerald-600" : "text-red-600"}`}
-              >
-                {state.message}
-              </p>
+            {successMessage ? (
+              <p className="text-sm text-emerald-600">{successMessage}</p>
+            ) : null}
+            {errorMessage ? (
+              <p className="text-sm text-red-600">{errorMessage}</p>
             ) : null}
           </form>
         </div>
@@ -194,7 +340,7 @@ export default function QuotePage() {
 
       <SubmissionSummaryModal
         isOpen={showModal}
-        data={state.data || null}
+        data={submittedData}
         onDismiss={() => setShowModal(false)}
       />
     </>

@@ -12,7 +12,7 @@ export const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ?? "G-62489KWDKJ",
 };
 
-// Keep auth bypass enabled in local/dev until real credentials and rules are set.
+// Keep bypass off by default and allow opting in only when explicitly enabled.
 export const adminBypassEnabled =
-  process.env.NEXT_PUBLIC_ADMIN_BYPASS_AUTH !== "false";
+  process.env.NEXT_PUBLIC_ADMIN_BYPASS_AUTH === "true";
 

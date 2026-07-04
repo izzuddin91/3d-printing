@@ -25,17 +25,23 @@ export type FaqItem = {
 };
 
 export type QuoteRequest = {
+  docId?: string;
   id: string;
   createdAt: string;
-  name: string;
-  email: string;
-  phone: string;
-  fileUrl: string;
-  projectType: string;
-  quantity: number;
-  material: string;
-  targetDate: string;
-  notes: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  fileUrl?: string;
+  projectType?: string;
+  quantity?: number;
+  material?: string;
+  targetDate?: string;
+  notes?: string;
+  transactionPeriod?: string;
+  serviceDescription?: string;
+  weight?: number;
+  pricePerGram?: number;
+  totalPayment?: number;
 };
 
 export type CarouselSlide = {

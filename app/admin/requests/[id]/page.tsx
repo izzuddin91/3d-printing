@@ -82,7 +82,7 @@ export default function AdminQuoteDetailPage() {
             Back to requests
           </Link>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-blue-950">
-            Quote Request Details
+            Quote Transaction Details
           </h1>
           <p className="mt-2 text-sm text-neutral-600">
             Submitted on {new Date(request.createdAt).toLocaleString()}
@@ -94,53 +94,54 @@ export default function AdminQuoteDetailPage() {
       <div className="mt-8 space-y-6">
         <div className="rounded-2xl border border-blue-100 bg-white p-8 shadow-sm">
           <h2 className="text-xl font-semibold text-blue-950 mb-6">
-            Customer Information
+            Transaction Summary
           </h2>
 
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <p className="text-sm font-medium uppercase tracking-[0.1em] text-neutral-600">
-                Name
-              </p>
-              <p className="mt-1 text-lg text-neutral-900">{request.name}</p>
-            </div>
-
-            {request.email && (
-              <div>
-                <p className="text-sm font-medium uppercase tracking-[0.1em] text-neutral-600">
-                  Email
-                </p>
-                <p className="mt-1 text-lg text-neutral-900">
-                  <a
-                    href={`mailto:${request.email}`}
-                    className="text-blue-600 hover:underline"
-                  >
-                    {request.email}
-                  </a>
-                </p>
-              </div>
-            )}
-
-            <div>
-              <p className="text-sm font-medium uppercase tracking-[0.1em] text-neutral-600">
-                Phone
+                Transaction Date
               </p>
               <p className="mt-1 text-lg text-neutral-900">
-                <a
-                  href={`tel:${request.phone}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {request.phone}
-                </a>
+                {request.transactionPeriod ||
+                  request.createdAt.slice(0, 10) ||
+                  "-"}
               </p>
             </div>
 
             <div>
               <p className="text-sm font-medium uppercase tracking-[0.1em] text-neutral-600">
-                Project Type
+                Service Description
               </p>
               <p className="mt-1 text-lg text-neutral-900">
-                {request.projectType}
+                {request.serviceDescription || "Printing Service"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium uppercase tracking-[0.1em] text-neutral-600">
+                Weight (g)
+              </p>
+              <p className="mt-1 text-lg text-neutral-900">
+                {(request.weight ?? 0).toFixed(2)}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium uppercase tracking-[0.1em] text-neutral-600">
+                Price Per Gram
+              </p>
+              <p className="mt-1 text-lg text-neutral-900">
+                RM {(request.pricePerGram ?? 0).toFixed(2)}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium uppercase tracking-[0.1em] text-neutral-600">
+                Total Payment
+              </p>
+              <p className="mt-1 text-lg font-semibold text-blue-900">
+                RM {(request.totalPayment ?? 0).toFixed(2)}
               </p>
             </div>
           </div>
@@ -199,30 +200,38 @@ export default function AdminQuoteDetailPage() {
             File Access
           </h2>
 
-          <div className="flex items-center gap-4">
-            <Link
-              href={request.fileUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          {request.fileUrl ? (
+            <div className="flex items-center gap-4">
+              <Link
+                href={request.fileUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              Download STL File
-            </Link>
-            <span className="text-sm text-neutral-600">{request.fileUrl}</span>
-          </div>
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                Download STL File
+              </Link>
+              <span className="text-sm text-neutral-600">
+                {request.fileUrl}
+              </span>
+            </div>
+          ) : (
+            <p className="text-sm text-neutral-600">
+              No file URL attached for this quote.
+            </p>
+          )}
         </div>
       </div>
     </main>
