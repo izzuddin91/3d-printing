@@ -29,6 +29,19 @@ type QuoteRequestUpdate = Partial<
   >
 >;
 
+type RevenueEntry = {
+  id: string;
+  docId?: string;
+  monthKey: string;
+  monthLabel: string;
+  totalPayment: number;
+  overheadCost: number;
+  description: string;
+  mySharePercent: number;
+  partnerSharePercent: number;
+  createdAt: string;
+};
+
 function normalizeQuoteRequest(raw: Partial<QuoteRequest>): QuoteRequest {
   const quantity = raw.quantity ?? 0;
   const weight = raw.weight ?? 0;
@@ -171,6 +184,56 @@ export async function updateQuoteRequest(
     }
 
     throw new Error("Failed to update quote request");
+  }
+}
+
+export async function addRevenueEntry(input: Omit<RevenueEntry, "id" | "createdAt" | "docId">): Promise<RevenueEntry> {
+  const entry: RevenueEntry = {
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    ...input,
+  };
+
+  try {
+    const snapshot = await addDoc(collection(firestore, "revenue"), entry);
+    return {
+      ...entry,
+      docId: snapshot.id,
+    };
+  } catch (error) {
+    console.error("Error adding revenue entry to Firestore:", error);
+    if (error instanceof Error) {
+      throw new Error(`Failed to save revenue entry: ${error.message}`);
+    }
+
+    throw new Error("Failed to save revenue entry");
+  }
+}
+
+export async function getRevenueEntries(): Promise<RevenueEntry[]> {
+  try {
+    const querySnapshot = await getDocs(
+      query(collection(firestore, "revenue"), orderBy("createdAt", "desc")),
+    );
+
+    return querySnapshot.docs.map((snapshot) => {
+      const data = snapshot.data() as Partial<RevenueEntry>;
+      return {
+        id: String(data.id ?? snapshot.id),
+        docId: snapshot.id,
+        monthKey: String(data.monthKey ?? ""),
+        monthLabel: String(data.monthLabel ?? ""),
+        totalPayment: Number(data.totalPayment ?? 0),
+        overheadCost: Number(data.overheadCost ?? 0),
+        description: String(data.description ?? ""),
+        mySharePercent: Number(data.mySharePercent ?? 0),
+        partnerSharePercent: Number(data.partnerSharePercent ?? 0),
+        createdAt: String(data.createdAt ?? ""),
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching revenue entries from Firestore:", error);
+    return [];
   }
 }
 
