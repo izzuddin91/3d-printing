@@ -5,12 +5,24 @@ import { Hero } from "@/components/hero";
 import { HomeCarousel } from "@/components/home-carousel";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { ServiceCards } from "@/components/service-cards";
+import { RecentProjectsShowcase } from "@/components/recent-projects-showcase";
 
 export default function Home() {
   return (
     <main className="mx-auto w-full max-w-6xl flex-1 space-y-20 px-6 py-12">
       <Hero />
       <HomeCarousel />
+
+      <section>
+        <div className="mb-8 space-y-2">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-600">Recent Projects</p>
+          <h2 className="text-4xl font-bold tracking-tight text-blue-950">Latest deliveries</h2>
+          <p className="max-w-2xl text-neutral-600">
+            See the latest projects we've completed and delivered to our clients.
+          </p>
+        </div>
+        <RecentProjectsShowcase />
+      </section>
 
       <section>
         <div className="mb-8 space-y-2">

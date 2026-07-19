@@ -63,3 +63,11 @@ export type FilamentPrice = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type Project = {
+  id: string;
+  image_url: string;
+  title: string;
+  description: string;
+  date_created: Date;
+};
